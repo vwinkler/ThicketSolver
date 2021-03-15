@@ -102,8 +102,8 @@ class Field:
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--width', dest='width', default=5)
-parser.add_argument('--height', dest='height', default=12)
+parser.add_argument('--width', dest='width', type=int, default=5)
+parser.add_argument('--height', dest='height', type=int, default=12)
 args = parser.parse_args()
 
 result, variableAssignments, _ = parseInput()
