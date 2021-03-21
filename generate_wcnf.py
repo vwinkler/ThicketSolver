@@ -73,9 +73,12 @@ class Field:
         return var
 
     def addHardClause(self, literals):
+        assert all([literal != 0 for literal in literals])
         self.addSoftClause(None, literals)
 
     def addSoftClause(self, weight, literals):
+        assert all([literal != 0 for literal in literals])
+        assert weight == None or weight >= 0
         self.clauses.append((weight, literals))
 
     def addNoBranchConstraintForTile(self, tile, direction):
@@ -123,6 +126,47 @@ class Field:
         self.addSoftClause(2, [var])
         # ToDo: consider adding reverse implication
 
+    def addVariableImpliesTileIsRiverEndConstraint(self, tile, variable):
+        self.addHardClause([self.water(tile), neg(variable)])
+        for i in range(len(directions)):
+            for j in range(i + 1, len(directions)):
+                tile1 = tile + directions[i]
+                tile2 = tile + directions[j]
+                if self.tileExists(tile1) and self.tileExists(tile2):
+                    self.addHardClause([self.thicket(tile1), self.thicket(tile2), neg(variable)])
+
+    def addTileIsRiverEndInDirectionImpliesVariableConstraint(self, tile, direction, variable):
+        tiles = [tile + rotateCounterclockwise(direction),
+                 tile + rotateCounterclockwise(rotateCounterclockwise(direction)),
+                 tile + rotateClockwise(direction)]
+        existingTiles = [tile for tile in tiles if self.tileExists(tile)]
+        self.addHardClause([self.water(tile) for tile in existingTiles] + [self.thicket(tile), variable])
+
+    def addTileIsRiverEndImpliesVariableConstraint(self, tile, variable):
+        for direction in directions:
+            if self.tileHasNeighbor(tile, direction):
+                self.addTileIsRiverEndInDirectionImpliesVariableConstraint(tile, direction, variable)
+
+    def addExactlyTwoTrueVariablesInSelectionConstraint(self, variables):
+        for i in range(len(variables)):
+            for j in range(i + 1, len(variables)):
+                for k in range(j + 1, len(variables)):
+                    self.addHardClause([neg(variables[i]), neg(variables[j]), neg(variables[k])])
+        for i in range(len(variables)):
+            self.addHardClause([variable for (l, variable) in enumerate(variables) if l != i])
+
+    def addOneRiverConstraint(self):
+        variables = []
+        for y in range(self.height):
+            for x in range(self.width):
+                if x in {0, self.width - 1} or y in {0, self.height - 1}:
+                    tile = TileCoordinates(x, y)
+                    variable = self.makeVariable()
+                    self.addVariableImpliesTileIsRiverEndConstraint(tile, variable)
+                    self.addTileIsRiverEndImpliesVariableConstraint(tile, variable)
+                    variables.append(variable)
+        self.addExactlyTwoTrueVariablesInSelectionConstraint(variables)
+
     def sumSoftClauseWeights(self):
         return sum([weight for (weight, _) in self.clauses if weight])
 
@@ -135,7 +179,7 @@ class Field:
                 weight = top
             printSoftClause(weight, literals)
 
-    def printMaxSatFormula(self):
+    def generateClauses(self):
         for y in range(self.height):
             for x in range(self.width):
                 tile = TileCoordinates(x, y)
@@ -143,6 +187,10 @@ class Field:
                 self.addNoInnerSourcesOrDrainsConstraintForTile(tile)
                 self.addThicketNextToRiverGoalsForTile(tile)
                 self.addNoThicketNextToRiverGoalForTile(tile)
+        self.addOneRiverConstraint()
+
+    def printMaxSatFormula(self):
+        self.generateClauses()
         top = self.sumSoftClauseWeights() + 10
         self.printInstanceInfo(top)
         self.printClauses(top)
