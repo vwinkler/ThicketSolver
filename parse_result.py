@@ -20,6 +20,14 @@ def parseResultToken(token):
         raise RuntimeError("could not parse result: 's {}'".format(token))
 
 
+def concatenanteRepeatedly(originalList, interval, insertedList):
+    i = interval
+    while i <= len(originalList):
+        originalList = originalList[:i] + insertedList + originalList[i:]
+        i += interval + len(insertedList)
+    return originalList
+
+
 def parseInput():
     intermediateOptimums = []
     variableAssignments = {}
@@ -92,9 +100,12 @@ class Field:
             print()
 
     def tryPrintUrl(self):
-        if self.width == 5:
+        if self.width <= 5:
             translation = {TileType.river: "1", TileType.thicket: "2"}
-            url = "https://loopherolayout.xyz/?c={}".format("".join([translation[tile] for tile in self.tiles]))
+            translatedTiles = [translation[tile] for tile in self.tiles]
+            translatedTiles = concatenanteRepeatedly(translatedTiles, self.width, ["0"] * (5 - self.width))
+
+            url = "https://loopherolayout.xyz/?c={}".format("".join(translatedTiles))
             print("see also: {}".format(url))
             return True
         else:
