@@ -25,4 +25,40 @@ More generally, e.g. for an area of `4 x 8`, use
 
 # Performance
 For an area of `5 x 12` on a `Intel(R) Core(TM) i5-2500K CPU @ 3.30GHz` system with 24 GB RAM running Open-WBO
-it takes about 1 min 23 sec.
+it takes about 3:15 h (tested `n=1` time).
+
+# Output
+For `python generate_wcnf.py | solve_maxsat | python parse_result.py` (an area of `5 x 12`)
+the output has been observed to be
+
+    An optimum solution was found.
+
+     T T W W W
+
+     T W W T W
+
+     W W T W W
+
+     W T W W T
+
+     T W W T W
+
+     W W T W W
+
+     W T W W T
+
+     W T W T T
+
+     W T W W T
+
+     W W T W W
+
+     T W W T W
+
+     T T W W W
+
+    see also: https://loopherolayout.xyz/?c=221112112111211121122112111211121121212212112112112112122111
+    
+Accordingly the
+[optimal solution](https://loopherolayout.xyz/?c=221112112111211121122112111211121121212212112112112112122111)
+has a score of 234.
