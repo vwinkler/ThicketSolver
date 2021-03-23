@@ -50,6 +50,7 @@ class Field:
         self.clauses = []
 
     def calcVariableIndexOfTile(self, tile):
+        assert self.tileExists(tile)
         return self.width * tile.y + tile.x + 1
 
     def lastTileVariableIndex(self):
@@ -66,6 +67,9 @@ class Field:
 
     def tileHasNeighbor(self, tile, direction):
         return self.tileExists(tile + direction)
+
+    def isInnerTile(self, tile):
+        return tile.x in range(1, self.width - 1) and tile.y in range(1, self.height - 1)
 
     def makeVariable(self):
         var = self.currentVariableIndex
@@ -91,19 +95,22 @@ class Field:
             if self.tileHasNeighbor(tile, direction):
                 self.addNoBranchConstraintForTile(tile, direction)
 
-    def addNoThreeOrMoreThicketsAroundRiverConstraintForTile(self, tile, direction):
+    def addAtLeastOneRiverAroundRiverConstraintForTile(self, tile, direction):
         tiles = [tile + rotateCounterclockwise(direction),
                  tile + rotateCounterclockwise(rotateCounterclockwise(direction)),
                  tile + rotateClockwise(direction)]
-        if all([self.tileExists(tile) for tile in tiles]):
-            self.addHardClause([neg(self.water(tile))] + [self.water(v) for v in tiles])
+        self.addHardClause([neg(self.water(tile))] + [self.water(v) for v in tiles if self.tileExists(v)])
 
     def addNoThreeOrMoreThicketsAroundRiverConstraintsForTile(self, tile):
         for direction in directions:
-            self.addNoThreeOrMoreThicketsAroundRiverConstraintForTile(tile, direction)
+            self.addAtLeastOneRiverAroundRiverConstraintForTile(tile, direction)
 
     def addNoInnerSourcesOrDrainsConstraintForTile(self, tile):
         self.addNoThreeOrMoreThicketsAroundRiverConstraintsForTile(tile)
+
+    def addNoIsolatedRiversConstraintForTile(self, tile):
+        tiles = [tile + direction for direction in directions if self.tileHasNeighbor(tile, direction)]
+        self.addHardClause([neg(self.water(tile))] + [self.water(v) for v in tiles])
 
     def addThicketNextToRiverGoalForTile(self, tile, direction):
         var = self.makeVariable()
@@ -184,7 +191,10 @@ class Field:
             for x in range(self.width):
                 tile = TileCoordinates(x, y)
                 self.addNoBranchConstraintsForTile(tile)
-                self.addNoInnerSourcesOrDrainsConstraintForTile(tile)
+                if self.isInnerTile(tile):
+                    self.addNoInnerSourcesOrDrainsConstraintForTile(tile)
+                else:
+                    self.addNoIsolatedRiversConstraintForTile(tile)
                 self.addThicketNextToRiverGoalsForTile(tile)
                 self.addNoThicketNextToRiverGoalForTile(tile)
         self.addOneRiverConstraint()
