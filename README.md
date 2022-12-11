@@ -57,8 +57,5 @@ the output has been observed to be
 
      T T W W W
 
-    see also: https://loopherolayout.xyz/?c=221112112111211121122112111211121121212212112112112112122111
     
-Accordingly the
-[optimal solution](https://loopherolayout.xyz/?c=221112112111211121122112111211121121212212112112112112122111)
-has a score of 234.
+Accordingly the optimal solution has a score of 234.

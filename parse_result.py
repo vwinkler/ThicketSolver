@@ -99,19 +99,6 @@ class Field:
             print()
             print()
 
-    def tryPrintUrl(self):
-        if self.width <= 5:
-            translation = {TileType.river: "1", TileType.thicket: "2"}
-            translatedTiles = [translation[tile] for tile in self.tiles]
-            translatedTiles = concatenanteRepeatedly(translatedTiles, self.width, ["0"] * (5 - self.width))
-
-            url = "https://loopherolayout.xyz/?c={}".format("".join(translatedTiles))
-            print("see also: {}".format(url))
-            return True
-        else:
-            return False
-
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--width', dest='width', type=int, default=5)
 parser.add_argument('--height', dest='height', type=int, default=12)
@@ -129,7 +116,6 @@ if result == Result.optimumFound:
         print("Error: {}".format(e))
 
     field.printGrid()
-    field.tryPrintUrl()
 
 elif result == Result.unsat:
     print("Error: The formula is unsatisfiable, therefore no valid solution exists")
