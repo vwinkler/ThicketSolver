@@ -22,6 +22,10 @@ One option that has worked flawlessly is [Open-WBO](https://github.com/sat-group
 More generally, e.g. for an area of `4 x 8`, use
 
     python generate_wcnf.py --width 4 --height 8 | solve_maxsat | python parse_result.py --width 4 --height 8
+    
+Alternatively, build and run a docker container that uses Open-WBO
+
+    solve_via_docker.sh 4 8
 
 # Performance
 For an area of `5 x 12` on a `Intel(R) Core(TM) i5-2500K CPU @ 3.30GHz` system with 24 GB RAM running Open-WBO
