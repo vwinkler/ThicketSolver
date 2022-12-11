@@ -3,6 +3,7 @@
 if [ $# -ne 2 ]
 then
     echo "Usage: $0 WIDTH HEIGHT"
+    exit 1
 fi
 
 echo "Building docker container.."
