@@ -1,5 +1,5 @@
 # Problem
-The problem is described in [this Reddit post](https://www.reddit.com/r/AskComputerScience/comments/m4mxgq/is_this_problem_intractable/).
+The problem is described in [this Reddit post](https://www.reddit.com/r/AskComputerScience/comments/m4mxgq/is_this_problem_intractable/) ([web.archive.org](https://web.archive.org/web/20210321165456/https://www.reddit.com/r/AskComputerScience/comments/m4mxgq/is_this_problem_intractable/)).
 
 # Solution
 The generator requires the size `n x m` of the area and returns a weighted partial MaxSAT formula.
