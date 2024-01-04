@@ -31,6 +31,9 @@ Alternatively, build and run a docker container that uses Open-WBO
 For an area of `5 x 12` on a `Intel(R) Core(TM) i5-2500K CPU @ 3.30GHz` system with 24 GB RAM running Open-WBO
 it takes about 3:15 h (tested `n=1` time).
 
+For an area of `5 x 12` on a `13th Gen Intel® Core™ i5-13600KF × 20` system with 32 GB RAM running Open-WBO
+it takes about 1:13 h (tested `n=1` time).
+
 # Output
 For `python generate_wcnf.py | solve_maxsat | python parse_result.py` (an area of `5 x 12`)
 the output has been observed to be
